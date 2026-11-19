@@ -1,0 +1,73 @@
+# Example definition: a research validation loop (synthetic names and figures).
+# Research only; the example does not use live capital.
+loop: research-validation
+purpose: 戦略仮説→事前登録→バックテスト→正式判定→知見の蓄積→新しい方向の生成、を繰り返し、コスト控除後・多重検定補正後でも残る優位性を探す（検証専用。実資金は使わない）
+updated_at: "2026-11-15"
+current_stage: 仮説生成（第2波）
+cycles: 2
+
+metrics:
+  - name: 検証試行数
+    current: "累計40件"
+    target: "増やす（方向のみ。並列検証の波を継続）"
+    measured_by: ledgers/trial-ledger.md
+    updated: "2026-11-15"
+  - name: ゲート通過数
+    current: "0件（登録仮説は全て不合格・凍結）"
+    target: "1件以上の正式通過"
+    measured_by: ledgers/trial-ledger.md
+    updated: "2026-11-15"
+  - name: ペーパートレード判定
+    current: "未実施（初回判定：PAPER-A は2026-12-15／PAPER-B は2027-02-01）"
+    target: "予定どおり判定を実施し、結果を台帳へ記録する"
+    measured_by: ledgers/paper-trading.md
+    updated: "2026-11-15"
+
+stages:
+  - name: 調査
+    split: テーマ単位
+    parallel_max: 1
+    reason: 失敗台帳（ledgers/lessons.md）を必ず先に読む逐次作業のため
+  - name: 仮説生成
+    split: 仮説単位
+    parallel_max: 1
+    reason: 台帳の横断観察を踏まえる判断作業のため
+  - name: 事前登録
+    split: 仮説単位
+    parallel_max: 1
+    reason: 定義ファイルのハッシュを台帳に記録してから実行する規律のため直列にする
+  - name: 並列バックテスト
+    split: 仮説トラック単位
+    parallel_note: 重い計算（モデル構築等）は遠隔の計算ホスト、軽いルール型は手元マシンに振り分ける
+    reason: 計算資源の性質で振り分け、仮説トラック単位の並列化で処理量を上げる
+  - name: 正式判定
+    split: 仮説単位
+    parallel_max: 1
+    reason: 事前に固定したゲートで機械判定し、救済しない逐次判定のため
+  - name: 知見の蓄積
+    split: 仮説単位
+    parallel_max: 1
+    reason: 単一の台帳（ledgers/lessons.md）への構造化追記のため
+  - name: 新しい方向の生成
+    split: テーマ単位
+    parallel_max: 1
+    reason: 蓄積した知見を踏まえる判断作業のため
+
+improvements:
+  - date: "2026-11-15"
+    change: 失敗・知見の蓄積台帳（ledgers/lessons.md）を新設し、新規仮説は必ず参照する規律を追加した
+    aimed_at: ゲート通過数
+    result: 第1波の失敗知見（L-01〜L-04）と横断観察を蓄積し、第2波の本命仮説の設定に反映
+  - date: "2026-11-15"
+    change: 並列実行の単位を仮説トラック化し、重い計算を遠隔の計算ホストへ振り分ける設計にした
+    aimed_at: 検証試行数
+    result: "試行累計 28件 → 40件（第1波 4仮説・16試行）"
+  - date: "2026-11-15"
+    change: 検証ループを恒常化し、第1波（4仮説・16試行）を並列実行した。遠隔計算ホストの利用を開始
+    aimed_at: 検証試行数
+    result: 第1波の全仮説が判定済み（全て不合格・凍結）。合格はまだ0件
+
+next_candidates:
+  - 第2波：本命仮説の設計・事前登録・実行
+  - 試行 +20 件タイミングでファミリー別の過学習監査を実施する
+  - 防御型仮説に仮説固有ゲート（ドローダウン・相対スコアを主指標）を登録時固定で使う設計の可否検討

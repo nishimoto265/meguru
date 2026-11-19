@@ -1,0 +1,58 @@
+# Example definition: a public facility-catalog improvement loop.
+# All names, counts, and paths below are synthetic.
+loop: catalog-refresh
+purpose: 公開カタログの件数・鮮度・見せ方を回すたびに良くし、掲載数と「写真つきで選べる」体験を伸ばして、提携による収益化につなげる
+updated_at: "2026-11-15"
+current_stage: 公開
+cycles: 3
+
+metrics:
+  - name: 公開件数
+    current: "120"
+    target: "200"
+    measured_by: data/catalog.csv
+    updated: "2026-11-15"
+  - name: 写真つき掲載率
+    current: "60%（72/120件）"
+    target: "上げる（方向のみ。残りは写真残件バッチで継続）"
+    measured_by: data/photo-ledger.csv
+    updated: "2026-11-15"
+  - name: 提携成立数
+    current: "0"
+    target: "増やす（方向のみ。提携ネットワークの審査通過後に申請）"
+    measured_by: data/partner-applications.md
+    updated: "2026-11-15"
+
+stages:
+  - name: 収集
+    split: 項目単位
+    parallel_max: 4
+    reason: I/O待ちが大半で並列が効くが、取得先への負荷が天井になるため上限を置く
+  - name: 選定・目視審査
+    split: 50件単位
+    parallel_max: 2
+    reason: 判断系の作業のため、分けすぎると採用基準がブレる
+  - name: 構築・公開
+    split: 一括
+    parallel_max: 1
+    reason: ビルドと公開は単一の成果物に対する直列作業
+
+improvements:
+  - date: "2026-11-15"
+    change: 写真の出典ルールを複合化（許諾画像 ＞ パブリックドメイン ＞ 公式サイト写真の出典明記 ＞ 公式SNS埋め込み）し、実装した
+    aimed_at: 写真つき掲載率
+    result: "0% → 60%（72/120件）"
+  - date: "2026-11-15"
+    change: 並行照合でマスター（data/catalog.csv）へ統合し、公開対象を照合済みの状態にそろえた
+    aimed_at: 公開件数
+    result: "110件 → 120件"
+  - date: "2026-11-15"
+    change: 改善バックログを新設し、継続改善をキュー化した
+    aimed_at: 公開件数
+    result: 継続改善の滞留を防ぐ土台を整備（定性）
+
+next_candidates:
+  - 誤り報告フォームの実装
+  - 写真の残件処理（要確認分の精査／取得失敗分の別経路再試行／埋め込み拡充）
+  - 陳腐化点検のローテーション運用化
+  - 構造化データ・サイトマップ

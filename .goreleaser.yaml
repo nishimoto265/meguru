@@ -1,0 +1,80 @@
+version: 2
+
+project_name: meguru
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: meguru
+    main: .
+    binary: meguru
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+archives:
+  - id: meguru
+    ids:
+      - meguru
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - tar.gz
+    format_overrides:
+      - goos: windows
+        formats:
+          - zip
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - Merge pull request
+      - Merge branch
+
+release:
+  github:
+    owner: nishimoto265
+    name: meguru
+  name_template: "{{ .Tag }}"
+  header: |
+    meguru is a lightweight CLI for managing improvement loops of
+    autonomous agents and projects: loop definitions (purpose, metrics,
+    stage design, improvement history) in a single YAML file, with
+    validation, digest reports, and drift/staleness detection against
+    actual run records.
+
+    meguru does not control execution — it only designs, records, and
+    checks the loop. Observation of what actually happened is the job of
+    its sister tool, michaku.
+  footer: |
+    ---
+
+    **Known limitations (v0.1)**
+
+    - Single machine, single operator. Definitions and actuals are local
+      files only; there is no server mode or sync.
+    - Actuals ingestion is JSONL with lenient field-name matching; other
+      formats (CSV, OpenTelemetry) are not supported yet.
+    - Drift detection covers metric staleness, improvements without a
+      recorded result, and actual parallelism exceeding the designed
+      `parallel_max`. No custom rule language yet.
+
+    Install: see the README — one curl command (Linux/macOS), a release
+    binary, or `go install github.com/nishimoto265/meguru@latest`.
